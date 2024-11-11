@@ -1,7 +1,12 @@
 <!DOCTYPE suite SYSTEM "https://testng.org/testng-1.0.dtd" >
 <suite name="SeleniumTestSuite">
     <!-- Parallel mode options: "tests", "methods", "classes", or "instances" -->
+    <listeners>
+        <listener class-name="actions.commons.MethodListener" />
+    </listeners>
+
     <test name="SampleTest" parallel="methods" thread-count="2" preserve-order="true">
+
         <parameter name="browser" value="chrome"/>
 
         <classes>

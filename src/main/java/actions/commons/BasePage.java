@@ -41,7 +41,7 @@ public class BasePage {
     }
 
     public Alert waitAlertPresence(WebDriver driver) {
-        return new WebDriverWait(driver, Duration.ofSeconds(10)).until(
+        return new WebDriverWait(driver, Duration.ofSeconds(GlobalConstants.LONG_TIMEOUT)).until(
                 ExpectedConditions.alertIsPresent()
         );
     }
@@ -117,11 +117,29 @@ public class BasePage {
     }
 
     private By getByXpath(String locator) {
-        return By.xpath(locator);
+        By by = null;
+        if (locator.toLowerCase().startsWith("xpath=")) {
+            by = By.xpath(locator.substring(6));
+        } else if (locator.toLowerCase().startsWith("css=")) {
+            by = By.xpath(locator.substring(4));
+        } else if (locator.toLowerCase().startsWith("id=")) {
+            by = By.id(locator.substring(3));
+        } else {
+            throw new RuntimeException("Locator must be in format of either ['xpath=', 'css=', 'id=']");
+        }
+        return by;
+    }
+
+    private String getDynamicLocator(String locator, String... values) {
+        return String.format(locator, (Object[]) values);
     }
 
     private WebElement getWebElement(WebDriver driver, String locator) {
         return driver.findElement(getByXpath(locator));
+    }
+
+    private WebElement getWebElement(WebDriver driver, String locator, String... restParams) {
+        return driver.findElement(getByXpath(getDynamicLocator(locator, restParams)));
     }
 
     public List<WebElement> getListWebElement(WebDriver driver, String locator) {
@@ -140,9 +158,18 @@ public class BasePage {
         getWebElement(driver, locator).click();
     }
 
+    public void clickToElement(WebDriver driver, String locator, String... restParams) {
+        getWebElement(driver, getDynamicLocator(locator, restParams)).click();
+    }
+
     public void sendKeyToElement(WebDriver driver, String locator, String keyToSend) {
         getWebElement(driver, locator).clear();
         getWebElement(driver, locator).sendKeys(keyToSend);
+    }
+
+    public void sendKeyToElement(WebDriver driver, String locator, String keyToSend, String... restParams) {
+        getWebElement(driver, getDynamicLocator(locator, restParams)).clear();
+        getWebElement(driver, getDynamicLocator(locator, restParams)).sendKeys(keyToSend);
     }
 
     public String getTextFromElement(WebDriver driver, String locator) {
@@ -293,23 +320,35 @@ public class BasePage {
     }
 
     public void waitForElementVisible(WebDriver driver, String locator) {
-        new WebDriverWait(driver, Duration.ofSeconds(15)).until(ExpectedConditions.visibilityOfElementLocated(getByXpath(locator)));
+        new WebDriverWait(driver, Duration.ofSeconds(GlobalConstants.LONG_TIMEOUT)).until(ExpectedConditions.visibilityOfElementLocated(getByXpath(locator)));
+    }
+
+    public void waitForElementVisible(WebDriver driver, String locator, String... restParams) {
+        new WebDriverWait(driver, Duration.ofSeconds(GlobalConstants.LONG_TIMEOUT)).until(ExpectedConditions.visibilityOfElementLocated(getByXpath(getDynamicLocator(locator, restParams))));
     }
 
     public void waitForElementInvisible(WebDriver driver, String locator) {
-        new WebDriverWait(driver, Duration.ofSeconds(15)).until(ExpectedConditions.invisibilityOfElementLocated(getByXpath(locator)));
+        new WebDriverWait(driver, Duration.ofSeconds(GlobalConstants.LONG_TIMEOUT)).until(ExpectedConditions.invisibilityOfElementLocated(getByXpath(locator)));
+    }
+
+    public void waitForElementInvisible(WebDriver driver, String locator, String... restParams) {
+        new WebDriverWait(driver, Duration.ofSeconds(GlobalConstants.LONG_TIMEOUT)).until(ExpectedConditions.invisibilityOfElementLocated(getByXpath(getDynamicLocator(locator, restParams))));
     }
 
     public void waitForListElementsVisible(WebDriver driver, String locator) {
-        new WebDriverWait(driver, Duration.ofSeconds(15)).until(ExpectedConditions.visibilityOfAllElementsLocatedBy(getByXpath(locator)));
+        new WebDriverWait(driver, Duration.ofSeconds(GlobalConstants.LONG_TIMEOUT)).until(ExpectedConditions.visibilityOfAllElementsLocatedBy(getByXpath(locator)));
     }
 
     public void waitForListElementsInvisible(WebDriver driver, String locator) {
-        new WebDriverWait(driver, Duration.ofSeconds(15)).until(ExpectedConditions.invisibilityOfElementLocated(getByXpath(locator)));
+        new WebDriverWait(driver, Duration.ofSeconds(GlobalConstants.LONG_TIMEOUT)).until(ExpectedConditions.invisibilityOfElementLocated(getByXpath(locator)));
     }
 
     public void waitForElementClickable(WebDriver driver, String locator) {
-        new WebDriverWait(driver, Duration.ofSeconds(15)).until(ExpectedConditions.elementToBeClickable(getByXpath(locator)));
+        new WebDriverWait(driver, Duration.ofSeconds(GlobalConstants.LONG_TIMEOUT)).until(ExpectedConditions.elementToBeClickable(getByXpath(locator)));
+    }
+
+    public void waitForElementClickable(WebDriver driver, String locator, String... restParams) {
+        new WebDriverWait(driver, Duration.ofSeconds(GlobalConstants.LONG_TIMEOUT)).until(ExpectedConditions.elementToBeClickable(getByXpath(getDynamicLocator(locator, restParams))));
     }
 
 
