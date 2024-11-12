@@ -2,6 +2,7 @@
 <suite name="SeleniumTestSuite">
     <listeners>
         <listener class-name="actions.commons.MethodListener" />
+        <listener class-name="actions.reportConfig.TestListener"/>
     </listeners>
     <!-- Test run on Chrome -->
 <!--    <test name="Run on Chrome" preserve-order="true">-->

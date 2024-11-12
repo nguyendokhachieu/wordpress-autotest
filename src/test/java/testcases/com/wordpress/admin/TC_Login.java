@@ -1,19 +1,14 @@
 package testcases.com.wordpress.admin;
 
+import java.lang.reflect.Method;
 import actions.commons.BaseTest;
 import actions.commons.GlobalConstants;
 import actions.commons.PageGeneratorManager;
 import actions.pageObjects.admin.LoginPageObject;
+import actions.reportConfig.ExtentTestManager;
+import com.aventstack.extentreports.Status;
 import interfaces.messages.admin.LoginPageMessage;
 import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.chrome.ChromeDriver;
-import org.openqa.selenium.edge.EdgeDriver;
-import org.openqa.selenium.firefox.FirefoxDriver;
-import org.openqa.selenium.firefox.FirefoxOptions;
-import org.openqa.selenium.firefox.FirefoxProfile;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.testng.Assert;
 import org.testng.annotations.*;
 
 public class TC_Login extends BaseTest {
@@ -35,12 +30,9 @@ public class TC_Login extends BaseTest {
     @Parameters("browser")
     @Test(priority = 1)
     public void TC_Login_001_LoginWithEmptyUsername(String browserName) {
-        log.info("Input to Password");
         loginPage.inputToPassword("123111");
-        log.info("Click to Login button");
         loginPage.clickLoginButton();
 
-        log.info("Verify error message");
         if (browserName.equalsIgnoreCase("firefox")) {
             verifyEquals(loginPage.getErrorMessageFromValidationPrompt("username"), LoginPageMessage.FILL_THIS_FIELD_VI);
         } else {
@@ -51,12 +43,9 @@ public class TC_Login extends BaseTest {
     @Parameters("browser")
     @Test(priority = 2)
     public void TC_Login_002_LoginWithEmptyPassword(String browserName) {
-        log.info("Input to Username");
         loginPage.inputToUsername("test_username1");
-        log.info("Click to Login button");
         loginPage.clickLoginButton();
 
-        log.info("Verify error message");
         if (browserName.equalsIgnoreCase("firefox")) {
             verifyEquals(loginPage.getErrorMessageFromValidationPrompt("password"), LoginPageMessage.FILL_THIS_FIELD_VI);
         } else {
@@ -65,16 +54,15 @@ public class TC_Login extends BaseTest {
     }
 
     @Test(priority = 3)
-    public void TC_Login_003_LoginWithUserNotExists() {
+    public void TC_Login_003_LoginWithUserNotExists(Method method) {
+        ExtentTestManager.startTest(method.getName(), "Register to system with valid Email and Password");
+        ExtentTestManager.getTest().log(Status.INFO, "TC_Login_003 - Step 01: Input to username");
+
         String username = "not_exist_username";
-        log.info("Input to Username");
         loginPage.inputToUsername(username);
-        log.info("Input to Password");
         loginPage.inputToPassword("123334");
-        log.info("Click to Login button");
         loginPage.clickLoginButton();
 
-        log.info("Verify error message");
         verifyEquals(loginPage.getErrorMessageFromBox(), String.format(LoginPageMessage.FM_USERNAME_NOT_EXIST, "username"));
     }
 
