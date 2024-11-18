@@ -3,6 +3,7 @@
     <!-- Parallel mode options: "tests", "methods", "classes", or "instances" -->
     <listeners>
         <listener class-name="actions.commons.MethodListener" />
+        <listener class-name="actions.reportConfig.AllureTestListener" />
     </listeners>
 
     <test name="SampleTest" parallel="methods" thread-count="2" preserve-order="true">

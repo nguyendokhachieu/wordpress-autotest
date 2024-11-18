@@ -2,6 +2,7 @@
 <suite name="SeleniumTestSuite">
     <listeners>
         <listener class-name="actions.commons.MethodListener" />
+        <listener class-name="actions.reportConfig.AllureTestListener" />
     </listeners>
     <!-- Test run on Chrome -->
 <!--    <test name="Run on Chrome" preserve-order="true">-->
@@ -15,6 +16,7 @@
     <test name="Run on Firefox" preserve-order="true">
         <parameter name="browser" value="firefox"/>
         <classes>
+            <class name="actions.commons.InitializeData"/>
             <class name="testcases.com.wordpress.admin.TC_Login"/>
         </classes>
     </test>

@@ -2,6 +2,7 @@ target/
 test-output/
 logs/
 allure-results/
+allure-json/
 !.mvn/wrapper/maven-wrapper.jar
 !**/src/main/**/target/
 !**/src/test/**/target/

@@ -1,5 +1,6 @@
 package actions.commons;
 
+import actions.utilities.JavaHelper;
 import org.openqa.selenium.*;
 import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.Color;
@@ -108,14 +109,6 @@ public class BasePage {
         driver.manage().deleteAllCookies();
     }
 
-    public void sleepInSeconds(int seconds) {
-        try {
-            Thread.sleep(seconds * 1000);
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
     private By getByXpath(String locator) {
         By by = null;
         if (locator.toLowerCase().startsWith("xpath=")) {
@@ -190,14 +183,14 @@ public class BasePage {
 
     public void selectItemInCustomDropdown(WebDriver driver, String parentLocator, String childrenLocator, String visibleText) {
         clickToElement(driver, parentLocator);
-        sleepInSeconds(1);
+        JavaHelper.sleepInSeconds(1);
 
         List<WebElement> childrenElements = new WebDriverWait(driver, Duration.ofSeconds(15))
                 .until(ExpectedConditions.presenceOfAllElementsLocatedBy(getByXpath(childrenLocator)));
 
         for (WebElement element: childrenElements) {
             if (element.getText().trim().equals(visibleText)) {
-                sleepInSeconds(1);
+                JavaHelper.sleepInSeconds(1);
                 element.click();
                 break;
             }
@@ -230,6 +223,25 @@ public class BasePage {
 
     public boolean isElementDisplayed(WebDriver driver, String locator) {
         return getWebElement(driver, locator).isDisplayed();
+    }
+
+    private void overrideImplicitTimeout(WebDriver driver, int timeout) {
+        driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(timeout));
+    }
+
+    public boolean isElementUndisplayed(WebDriver driver, String locator) {
+        overrideImplicitTimeout(driver, GlobalConstants.SHORT_TIMEOUT);
+        List<WebElement> list = getListWebElement(driver, locator);
+        overrideImplicitTimeout(driver, GlobalConstants.LONG_TIMEOUT);
+
+        if (list.size() == 0) {
+            // Not in DOM
+            return true;
+        } else if (list.size() > 0 && !list.get(0).isDisplayed()) {
+            // In DOM, but not display
+            return true;
+        }
+        return false;
     }
 
     public boolean isElementSelected(WebDriver driver, String locator) {
@@ -272,13 +284,13 @@ public class BasePage {
         WebElement element = getWebElement(driver, locator);
         String originalStyle = element.getAttribute("style");
         ((JavascriptExecutor) driver).executeScript("arguments[0].setAttribute('style', arguments[1])", element, "border: 2px solid red; border-style: dashed;");
-        sleepInSeconds(2);
+        JavaHelper.sleepInSeconds(2);
         ((JavascriptExecutor) driver).executeScript("arguments[0].setAttribute('style', arguments[1])", element, originalStyle);
     }
 
     public void clickToElementByJS(WebDriver driver, String locator) {
         ((JavascriptExecutor) driver).executeScript("arguments[0].click();", getWebElement(driver, locator));
-        sleepInSeconds(3);
+        JavaHelper.sleepInSeconds(3);
     }
 
     public void scrollToElementOnTopByJS(WebDriver driver, String locator) {
