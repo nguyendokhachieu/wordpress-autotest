@@ -6,5 +6,5 @@ public class GlobalConstants {
     public static final String RELATIVE_PROJECT_PATH = System.getProperty("user.dir");
     public static final String ADMIN_PAGE_USERNAME = "wordpressdev";
     public static final String ADMIN_PAGE_PASSWORD = "wordpressdev";
-
+    public static final String PAGE_URL_LOCAL_HOST = "http://localhost/wordpress/wp-admin";
 }

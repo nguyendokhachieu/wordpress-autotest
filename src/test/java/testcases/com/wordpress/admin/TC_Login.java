@@ -5,17 +5,12 @@ import actions.commons.GlobalConstants;
 import actions.commons.PageGeneratorManager;
 import actions.pageObjects.admin.LoginPageObject;
 import interfaces.messages.admin.LoginPageMessage;
+import io.qameta.allure.Description;
+import io.qameta.allure.Epic;
 import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.chrome.ChromeDriver;
-import org.openqa.selenium.edge.EdgeDriver;
-import org.openqa.selenium.firefox.FirefoxDriver;
-import org.openqa.selenium.firefox.FirefoxOptions;
-import org.openqa.selenium.firefox.FirefoxProfile;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.testng.Assert;
 import org.testng.annotations.*;
 
+@Epic("Login")
 public class TC_Login extends BaseTest {
     private WebDriver driver;
     private LoginPageObject loginPage;
@@ -64,18 +59,15 @@ public class TC_Login extends BaseTest {
         }
     }
 
+    @Description("Login With User Not Exists")
     @Test(priority = 3)
     public void TC_Login_003_LoginWithUserNotExists() {
         String username = "not_exist_username";
-        log.info("Input to Username");
         loginPage.inputToUsername(username);
-        log.info("Input to Password");
         loginPage.inputToPassword("123334");
-        log.info("Click to Login button");
         loginPage.clickLoginButton();
 
-        log.info("Verify error message");
-        verifyEquals(loginPage.getErrorMessageFromBox(), String.format(LoginPageMessage.FM_USERNAME_NOT_EXIST, "username"));
+        verifyEquals(loginPage.getErrorMessageFromBox(), String.format(LoginPageMessage.FM_USERNAME_NOT_EXIST, username));
     }
 
     @Test(priority = 4)
@@ -87,9 +79,9 @@ public class TC_Login extends BaseTest {
         verifyEquals(loginPage.getErrorMessageFromBox(), String.format(LoginPageMessage.FM_WRONG_PASSWORD, GlobalConstants.ADMIN_PAGE_USERNAME));
     }
 
-    @AfterClass
+    @AfterClass(alwaysRun = true)
     public void afterClass() {
-//        driver.quit();
+        closeBrowser();
     }
 
 }
