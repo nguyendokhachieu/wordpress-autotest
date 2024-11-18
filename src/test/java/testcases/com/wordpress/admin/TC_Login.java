@@ -3,17 +3,20 @@ package testcases.com.wordpress.admin;
 import actions.commons.BaseTest;
 import actions.commons.GlobalConstants;
 import actions.commons.PageGeneratorManager;
+import actions.pageObjects.admin.DashboardPageObject;
 import actions.pageObjects.admin.LoginPageObject;
 import interfaces.messages.admin.LoginPageMessage;
 import io.qameta.allure.Description;
 import io.qameta.allure.Epic;
 import org.openqa.selenium.WebDriver;
+import org.testng.Assert;
 import org.testng.annotations.*;
 
 @Epic("Login")
 public class TC_Login extends BaseTest {
     private WebDriver driver;
     private LoginPageObject loginPage;
+    private DashboardPageObject dashboardPage;
 
     @Parameters("browser")
     @BeforeClass
@@ -23,60 +26,66 @@ public class TC_Login extends BaseTest {
 
     @BeforeMethod
     public void beforeMethod() {
-        driver.get("http://localhost/wordpress/wp-admin");
+        openUrl(driver,GlobalConstants.PAGE_URL_LOCAL_HOST);
         loginPage = PageGeneratorManager.getLoginPage(driver);
     }
 
+    @Description("TC_Login_001_LoginWithEmptyUsername")
     @Parameters("browser")
-    @Test(priority = 1)
+    @Test
     public void TC_Login_001_LoginWithEmptyUsername(String browserName) {
-        log.info("Input to Password");
         loginPage.inputToPassword("123111");
-        log.info("Click to Login button");
         loginPage.clickLoginButton();
 
-        log.info("Verify error message");
         if (browserName.equalsIgnoreCase("firefox")) {
-            verifyEquals(loginPage.getErrorMessageFromValidationPrompt("username"), LoginPageMessage.FILL_THIS_FIELD_VI);
+            Assert.assertEquals(loginPage.getErrorMessageFromValidationPrompt("username"), LoginPageMessage.FILL_THIS_FIELD_VI);
         } else {
-            verifyEquals(loginPage.getErrorMessageFromValidationPrompt("username"), LoginPageMessage.FILL_THIS_FIELD);
+            Assert.assertEquals(loginPage.getErrorMessageFromValidationPrompt("username"), LoginPageMessage.FILL_THIS_FIELD);
         }
     }
 
+    @Description("TC_Login_002_LoginWithEmptyPassword")
     @Parameters("browser")
-    @Test(priority = 2)
+    @Test
     public void TC_Login_002_LoginWithEmptyPassword(String browserName) {
-        log.info("Input to Username");
         loginPage.inputToUsername("test_username1");
-        log.info("Click to Login button");
         loginPage.clickLoginButton();
 
-        log.info("Verify error message");
         if (browserName.equalsIgnoreCase("firefox")) {
-            verifyEquals(loginPage.getErrorMessageFromValidationPrompt("password"), LoginPageMessage.FILL_THIS_FIELD_VI);
+            Assert.assertEquals(loginPage.getErrorMessageFromValidationPrompt("password"), LoginPageMessage.FILL_THIS_FIELD_VI);
         } else {
-            verifyEquals(loginPage.getErrorMessageFromValidationPrompt("password"), LoginPageMessage.FILL_THIS_FIELD);
+            Assert.assertEquals(loginPage.getErrorMessageFromValidationPrompt("password"), LoginPageMessage.FILL_THIS_FIELD);
         }
     }
 
-    @Description("Login With User Not Exists")
-    @Test(priority = 3)
+    @Description("TC_Login_003_LoginWithUserNotExists")
+    @Test
     public void TC_Login_003_LoginWithUserNotExists() {
         String username = "not_exist_username";
         loginPage.inputToUsername(username);
         loginPage.inputToPassword("123334");
         loginPage.clickLoginButton();
 
-        verifyEquals(loginPage.getErrorMessageFromBox(), String.format(LoginPageMessage.FM_USERNAME_NOT_EXIST, username));
+        Assert.assertEquals(loginPage.getErrorMessageFromBox(), String.format(LoginPageMessage.FM_USERNAME_NOT_EXIST, username));
     }
 
-    @Test(priority = 4)
+    @Description("TC_Login_004_LoginWithWrongPassword")
+    @Test
     public void TC_Login_004_LoginWithWrongPassword() {
         loginPage.inputToUsername(GlobalConstants.ADMIN_PAGE_USERNAME);
         loginPage.inputToPassword("wrong_password");
         loginPage.clickLoginButton();
 
-        verifyEquals(loginPage.getErrorMessageFromBox(), String.format(LoginPageMessage.FM_WRONG_PASSWORD, GlobalConstants.ADMIN_PAGE_USERNAME));
+        Assert.assertEquals(loginPage.getErrorMessageFromBox(), String.format(LoginPageMessage.FM_WRONG_PASSWORD, GlobalConstants.ADMIN_PAGE_USERNAME));
+    }
+
+    @Description("TC_Login_005_LoginSuccess")
+    @Test
+    public void TC_Login_005_LoginSuccess() {
+        loginPage.inputToUsername(GlobalConstants.ADMIN_PAGE_USERNAME);
+        loginPage.inputToPassword(GlobalConstants.ADMIN_PAGE_PASSWORD);
+        dashboardPage = loginPage.clickLoginButton();
+        Assert.assertTrue(dashboardPage.isDashboardTitleDisplayed());
     }
 
     @AfterClass(alwaysRun = true)

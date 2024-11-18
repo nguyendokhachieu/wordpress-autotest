@@ -1,6 +1,7 @@
 package actions.pageObjects.admin;
 
 import actions.commons.BasePage;
+import actions.commons.PageGeneratorManager;
 import actions.utilities.JavaHelper;
 import interfaces.pageUIs.admin.LoginPageUI;
 import io.qameta.allure.Step;
@@ -18,9 +19,10 @@ public class LoginPageObject extends BasePage {
     }
 
     @Step("Click to Login button")
-    public void clickLoginButton() {
+    public DashboardPageObject clickLoginButton() {
         waitForElementClickable(driver, LoginPageUI.LOGIN_BUTTON);
         clickToElement(driver, LoginPageUI.LOGIN_BUTTON);
+        return PageGeneratorManager.getDashboardPage(driver);
     }
 
     @Step("Input to Username: {0}")

@@ -154,7 +154,6 @@ public class BaseTest {
 
     @BeforeSuite
     public void deleteFileInReport() {
-        // Remove all file in Allure attachment (json file)
         deleteAllFileInFolder("allure-json");
     }
 
